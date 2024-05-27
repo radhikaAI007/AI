@@ -1,53 +1,37 @@
 :- initialization(main).
-main :- write('Hello, World!').% Facts
-parent(john, mary).
-parent(john, mike).
-parent(susan, mary).
-parent(susan, mike).
-parent(mary, anna).
-parent(mary, tom).
-parent(peter, anna).
-parent(peter, tom).
+
+% family.pl
+
+% Facts
+parent(tom, bob).
+parent(tom, liz).
+parent(bob, ann).
+parent(bob, pat).
+parent(liz, bill).
+parent(ann, john).
 
 % Rules
-father(F, C) :- parent(F, C), male(F).
-mother(M, C) :- parent(M, C), female(M).
+grandparent(X, Y) :- 
+    parent(X, Z), 
+    parent(Z, Y).
 
-child(C, P) :- parent(P, C).
-sibling(X, Y) :- parent(P, X), parent(P, Y), X \= Y.
+sibling(X, Y) :- 
+    parent(P, X), 
+    parent(P, Y), 
+    X \= Y.
 
-grandparent(GP, GC) :- parent(GP, P), parent(P, GC).
+ancestor(X, Y) :- 
+    parent(X, Y).
 
-% Gender facts
-male(john).
-male(mike).
-male(peter).
-male(tom).
-female(susan).
-female(mary).
-female(anna).
+ancestor(X, Y) :- 
+    parent(X, Z), 
+    ancestor(Z, Y).
 
-% Queries for testing
-% ?- father(john, mary).
-% ?- mother(susan, mike).
-% ?- child(mary, john).
-% ?- sibling(mike, mary).
-% ?- grandparent(john, anna).
+% Main predicate to run queries and print results
+main :-
+    (grandparent(tom, ann) -> write('Tom is a grandparent of Ann'), nl; write('Tom is not a grandparent of Ann'), nl),
+    (sibling(bob, liz) -> write('Bob and Liz are siblings'), nl; write('Bob and Liz are not siblings'), nl),
+    (ancestor(tom, john) -> write('Tom is an ancestor of John'), nl; write('Tom is not an ancestor of John'), nl),
+    (sibling(bob, S) -> format('Bob has a sibling: ~w~n', [S]); write('Bob has no siblings'), nl),
+    (grandparent(GP, pat) -> format('Pat has a grandparent: ~w~n', [GP]); write('Pat has no grandparents'), nl).
 
-% Initialization and main program
-:- initialization(main).
-main :- 
-    write('Family Tree Program'), nl,
-    write('Example Queries:'), nl,
-    write('father(john, mary).'), nl,
-    write('mother(susan, mike).'), nl,
-    write('child(mary, john).'), nl,
-    write('sibling(mike, mary).'), nl,
-    write('grandparent(john, anna).'), nl,
-    nl,
-    % Running some example queries
-    (father(john, mary) -> write('John is the father of Mary.'), nl ; write('John is not the father of Mary.'), nl),
-    (mother(susan, mike) -> write('Susan is the mother of Mike.'), nl ; write('Susan is not the mother of Mike.'), nl),
-    (child(mary, john) -> write('Mary is the child of John.'), nl ; write('Mary is not the child of John.'), nl),
-    (sibling(mike, mary) -> write('Mike is a sibling of Mary.'), nl ; write('Mike is not a sibling of Mary.'), nl),
-    (grandparent(john, anna) -> write('John is the grandparent of Anna.'), nl ; write('John is not the grandparent of Anna.'), nl).
